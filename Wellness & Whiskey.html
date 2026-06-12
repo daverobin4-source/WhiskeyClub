@@ -12,6 +12,13 @@
     overflow:hidden; }
   #stage { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
   #phone-scale { transform-origin:center center; }
+  #root { height:100%; }
+  /* On phones, drop the device-mockup chrome and fill the screen edge-to-edge. */
+  @media (max-width: 600px) {
+    body { background:#190E06; }
+    #stage { display:block; }
+    #phone-scale { width:100%; height:100%; }
+  }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -58,6 +65,8 @@ function App() {
   const [boardVisit, setBoardVisit] = useState(0);
   const [seenBanter, setSeenBanter] = useState(false);
   const [activate, setActivate] = useState(false);
+  const mq = useRef(window.matchMedia('(max-width: 600px)'));
+  const [mobile, setMobile] = useState(mq.current.matches);
 
   // keep the global mirror in sync so host-badge / default-bottle reads stay current
   WW.meeting = meeting;
@@ -67,16 +76,23 @@ function App() {
     localStorage.setItem(LS, JSON.stringify({ tab, userScores, rsvp, posts, meeting, episodes, customWhiskeys }));
   }, [tab, userScores, rsvp, posts, meeting, episodes, customWhiskeys]);
 
-  // fit to viewport
+  // fit to viewport — scale the device mockup on desktop; fill the screen on phones
   useEffect(() => {
     const el = document.getElementById('phone-scale');
+    const m = mq.current;
     function fit() {
-      const s = Math.min(1, (window.innerHeight - 28) / 874, (window.innerWidth - 20) / 402);
-      el.style.transform = `scale(${s})`;
+      if (m.matches) {
+        el.style.transform = 'none';
+      } else {
+        const s = Math.min(1, (window.innerHeight - 28) / 874, (window.innerWidth - 20) / 402);
+        el.style.transform = `scale(${s})`;
+      }
     }
+    function onMq() { setMobile(m.matches); fit(); }
     fit();
     window.addEventListener('resize', fit);
-    return () => window.removeEventListener('resize', fit);
+    m.addEventListener('change', onMq);
+    return () => { window.removeEventListener('resize', fit); m.removeEventListener('change', onMq); };
   }, []);
 
   function go(next) {
@@ -135,9 +151,9 @@ function App() {
   const banterDot = !seenBanter;
 
   return (
-    <IOSDevice dark={true}>
+    <IOSDevice dark={true} bare={mobile}>
       <div style={{ height:'100%', display:'flex', flexDirection:'column', background:'var(--ww-cream)' }}>
-        <AppHeader meeting={meeting}/>
+        <AppHeader meeting={meeting} mobile={mobile}/>
         <div style={{ flex:1, minHeight:0, display:'flex', flexDirection:'column', position:'relative' }}>
           {tab === 'meeting' && <MeetingScreen meeting={meeting} episodes={episodes} rsvp={rsvp} onRsvp={onRsvp} onGotoRank={() => go('rank')} onActivate={() => setActivate(true)}/>}
           {tab === 'board'   && <BoardScreen key={'b' + boardVisit} userScores={userScores} justRated={justRated}/>}
@@ -145,7 +161,7 @@ function App() {
           {tab === 'banter'  && <BanterScreen posts={posts} onReact={onReact} onPost={onPost}/>}
           <ActivateSheet open={activate} meeting={meeting} onClose={() => setActivate(false)} onActivate={onActivateEpisode}/>
         </div>
-        <TabBar active={tab} onChange={go} banterDot={banterDot}/>
+        <TabBar active={tab} onChange={go} banterDot={banterDot} mobile={mobile}/>
       </div>
     </IOSDevice>
   );

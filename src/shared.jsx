@@ -79,10 +79,10 @@ function Wordmark({ dark = true }) {
 }
 
 /* ---- App header ---------------------------------------------------------- */
-function AppHeader({ meeting = WW.meeting }) {
+function AppHeader({ meeting = WW.meeting, mobile = false }) {
   const season = meeting.season || 1;
   return (
-    <div style={{ background:C.espresso, flexShrink:0, paddingTop:52, paddingBottom:13, position:'relative' }}>
+    <div style={{ background:C.espresso, flexShrink:0, paddingTop: mobile ? 'calc(env(safe-area-inset-top, 0px) + 16px)' : 52, paddingBottom:13, position:'relative' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px' }}>
         <Wordmark/>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -91,7 +91,7 @@ function AppHeader({ meeting = WW.meeting }) {
             borderRadius:999, background:'rgba(248,241,230,.08)', border:`1px solid ${C.lineDark}`,
           }}>
             <Icon name="trophy-fill" size={14} color={C.gold}/>
-            <span className="tab-num" style={{ fontFamily:F.sans, fontWeight:500, fontSize:13, color:C.onDark }}>S{season} · E{meeting.no}</span>
+            <span className="tab-num" style={{ fontFamily:F.sans, fontWeight:500, fontSize:13, color:C.onDark, whiteSpace:'nowrap' }}>S{season} · E{meeting.no}</span>
           </div>
           <Avatar m={WW.me} size={34} ring="rgba(248,241,230,.18)"/>
         </div>
@@ -107,9 +107,9 @@ const TABS = [
   { id:'rank',    label:'Rank',    icon:'bottle' },
   { id:'banter',  label:'Banter',  icon:'chat' },
 ];
-function TabBar({ active, onChange, banterDot }) {
+function TabBar({ active, onChange, banterDot, mobile = false }) {
   return (
-    <div style={{ background:C.espresso, flexShrink:0, borderTop:`1px solid ${C.lineDark}`, paddingBottom:24 }}>
+    <div style={{ background:C.espresso, flexShrink:0, borderTop:`1px solid ${C.lineDark}`, paddingBottom: mobile ? 'calc(env(safe-area-inset-bottom, 0px) + 10px)' : 24 }}>
       <div style={{ display:'flex', justifyContent:'space-around', alignItems:'stretch', padding:'9px 4px 0' }}>
         {TABS.map(t => {
           const on = t.id === active;

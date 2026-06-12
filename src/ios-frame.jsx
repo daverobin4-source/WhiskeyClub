@@ -189,8 +189,22 @@ function IOSList({ header, children, dark = false }) {
 // ─────────────────────────────────────────────────────────────
 function IOSDevice({
   children, width = 402, height = 874, dark = false,
-  title, keyboard = false,
+  title, keyboard = false, bare = false,
 }) {
+  // bare = full-bleed mobile mode: no bezel / status bar / island, fills the viewport.
+  if (bare) {
+    return (
+      <div style={{
+        width: '100%', height: '100%', overflow: 'hidden',
+        background: dark ? '#000' : '#F2F2F7',
+        display: 'flex', flexDirection: 'column',
+        fontFamily: '-apple-system, system-ui, sans-serif',
+        WebkitFontSmoothing: 'antialiased',
+      }}>
+        {children}
+      </div>
+    );
+  }
   return (
     <div style={{
       width, height, borderRadius: 48, overflow: 'hidden',
