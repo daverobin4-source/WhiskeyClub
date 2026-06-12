@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wellness &amp; Whiskey</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="src/whiskey.css">
+<style>
+  html, body { margin:0; padding:0; height:100%; background:#120A04;
+    background-image: radial-gradient(120% 80% at 50% 0%, #241509 0%, #120A04 60%, #0C0703 100%);
+    overflow:hidden; }
+  #stage { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+  #phone-scale { transform-origin:center center; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="stage"><div id="phone-scale"><div id="root"></div></div></div>
+
+<!-- plain globals -->
+<script src="src/icons.js"></script>
+<script src="src/data.js"></script>
+<script src="src/store.js"></script>
+<!-- babel components -->
+<script type="text/babel" src="src/ios-frame.jsx"></script>
+<script type="text/babel" src="src/shared.jsx"></script>
+<script type="text/babel" src="src/screen-meeting.jsx"></script>
+<script type="text/babel" src="src/screen-board.jsx"></script>
+<script type="text/babel" src="src/screen-rank.jsx"></script>
+<script type="text/babel" src="src/screen-banter.jsx"></script>
+<script type="text/babel" src="src/activate.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const LS = 'ww_state_v3';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) { return {}; }
+}
+
+function App() {
+  const saved = useRef(loadState()).current;
+  // Re-register any user-added whiskeys into the live catalog before first render.
+  const hydrated = useRef(false);
+  if (!hydrated.current) { WW.ensureWhiskeys(saved.customWhiskeys || []); hydrated.current = true; }
+
+  const [tab, setTab] = useState(saved.tab || 'meeting');
+  const [userScores, setUserScores] = useState(saved.userScores || {});
+  const [meeting, setMeeting] = useState(saved.meeting || Object.assign({}, WW.meeting));
+  const [episodes, setEpisodes] = useState(saved.episodes || []);
+  const [customWhiskeys, setCustomWhiskeys] = useState(saved.customWhiskeys || []);
+  const [rsvp, setRsvp] = useState(saved.rsvp || Object.assign({}, (saved.meeting || WW.meeting).rsvp));
+  const [posts, setPosts] = useState(saved.posts || WW.banter);
+  const [justRated, setJustRated] = useState(null);
+  const [boardVisit, setBoardVisit] = useState(0);
+  const [seenBanter, setSeenBanter] = useState(false);
+  const [activate, setActivate] = useState(false);
+
+  // keep the global mirror in sync so host-badge / default-bottle reads stay current
+  WW.meeting = meeting;
+
+  // persist
+  useEffect(() => {
+    localStorage.setItem(LS, JSON.stringify({ tab, userScores, rsvp, posts, meeting, episodes, customWhiskeys }));
+  }, [tab, userScores, rsvp, posts, meeting, episodes, customWhiskeys]);
+
+  // fit to viewport
+  useEffect(() => {
+    const el = document.getElementById('phone-scale');
+    function fit() {
+      const s = Math.min(1, (window.innerHeight - 28) / 874, (window.innerWidth - 20) / 402);
+      el.style.transform = `scale(${s})`;
+    }
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
+
+  function go(next) {
+    if (next === 'board' && tab !== 'board') setBoardVisit(v => v + 1);
+    if (next === 'banter') setSeenBanter(true);
+    if (next !== 'board') setJustRated(null);
+    setTab(next);
+  }
+
+  function onRsvp(status) { setRsvp(r => ({ ...r, [WW.me.id]: status })); }
+
+  function onSubmitScore(id, sc) { setUserScores(s => ({ ...s, [id]: sc })); }
+
+  function onGotoBoardFromRank(id) {
+    setJustRated(id);
+    setBoardVisit(v => v + 1);
+    setTab('board');
+  }
+
+  function onReact(postId, emo) {
+    setPosts(ps => ps.map(p => {
+      if (p.id !== postId) return p;
+      const r = { ...p.reactions };
+      let mine = p.mine;
+      if (mine === emo) { r[emo] = Math.max(0, (r[emo] || 0) - 1); mine = null; }
+      else { if (mine) r[mine] = Math.max(0, (r[mine] || 0) - 1); r[emo] = (r[emo] || 0) + 1; mine = emo; }
+      return { ...p, reactions: r, mine };
+    }));
+  }
+
+  function onPost(text) {
+    const np = { id: 'u' + Date.now(), author: WW.me.id, time: 'just now', text,
+      reactions: { '\uD83D\uDD25':0, '\u2764\uFE0F':0, '\uD83D\uDE02':0, '\uD83E\uDD43':0 }, mine: null, comments: 0, score: null };
+    setPosts(ps => [np, ...ps]);
+  }
+
+  // Activate the next episode: archive the current one, register any new bottle,
+  // promote the new meeting and reset RSVPs.
+  function onActivateEpisode(next) {
+    if (next.newWhiskey) {
+      WW.addWhiskey(next.newWhiskey);
+      setCustomWhiskeys(cw => cw.find(x => x.id === next.newWhiskey.id) ? cw : [...cw, next.newWhiskey]);
+    }
+    setEpisodes(eps => [meeting, ...eps]);
+    const m = {
+      season: next.season, no: next.no, host: next.host, venue: next.venue, address: next.address,
+      target: next.target, theme: next.theme, subtitle: next.subtitle, buyIn: next.buyIn,
+      bottle: next.bottle, bring: next.bring, rsvp: next.rsvp,
+    };
+    setMeeting(m);
+    setRsvp(Object.assign({}, next.rsvp));
+    setActivate(false);
+    setTab('meeting');
+  }
+
+  const banterDot = !seenBanter;
+
+  return (
+    <IOSDevice dark={true}>
+      <div style={{ height:'100%', display:'flex', flexDirection:'column', background:'var(--ww-cream)' }}>
+        <AppHeader meeting={meeting}/>
+        <div style={{ flex:1, minHeight:0, display:'flex', flexDirection:'column', position:'relative' }}>
+          {tab === 'meeting' && <MeetingScreen meeting={meeting} episodes={episodes} rsvp={rsvp} onRsvp={onRsvp} onGotoRank={() => go('rank')} onActivate={() => setActivate(true)}/>}
+          {tab === 'board'   && <BoardScreen key={'b' + boardVisit} userScores={userScores} justRated={justRated}/>}
+          {tab === 'rank'    && <RankScreen userScores={userScores} onSubmit={onSubmitScore} onGotoBoard={onGotoBoardFromRank} houseBottle={meeting.bottle}/>}
+          {tab === 'banter'  && <BanterScreen posts={posts} onReact={onReact} onPost={onPost}/>}
+          <ActivateSheet open={activate} meeting={meeting} onClose={() => setActivate(false)} onActivate={onActivateEpisode}/>
+        </div>
+        <TabBar active={tab} onChange={go} banterDot={banterDot}/>
+      </div>
+    </IOSDevice>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

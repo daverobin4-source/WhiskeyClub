@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dabble Blackjack</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<style>
+  html, body { margin: 0; height: 100%; background: #07010C; overflow: hidden; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(80% 60% at 50% 0%, #1A0533 0%, #07010C 60%),
+      #07010C;
+  }
+  #stage { transform-origin: center center; }
+
+  /* ── Card deal-in ── */
+  @keyframes bj-deal-in {
+    0%   { opacity: 0; transform: translate(120px, -180px) rotate(22deg) scale(.85); }
+    100% { opacity: 1; transform: translate(0,0) rotate(0) scale(1); }
+  }
+  .bj-card-deal { animation: bj-deal-in .42s cubic-bezier(.2,.8,.2,1) both; }
+
+  /* ── Ace glow ring ── */
+  @keyframes bj-ace-pulse {
+    0%,100% { box-shadow: 0 0 8px 1px rgba(119,66,255,.55), 0 0 18px 3px rgba(252,255,64,.25); }
+    50%     { box-shadow: 0 0 16px 4px rgba(119,66,255,.9), 0 0 30px 8px rgba(252,255,64,.45); }
+  }
+  .bj-ace-glow { animation: bj-ace-pulse 1.3s ease-in-out infinite; }
+
+  /* ── Soft hand pulse ── */
+  @keyframes bj-soft { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+  .bj-soft-pulse { animation: bj-soft 1.1s ease-in-out infinite; }
+
+  /* ── Flame burst behind ace ── */
+  @keyframes bj-flame {
+    0%   { opacity: 0; transform: scale(.3) rotate(-12deg); }
+    35%  { opacity: 1; transform: scale(1.15) rotate(4deg); }
+    100% { opacity: 0; transform: scale(1.4) rotate(10deg) translateY(-14px); }
+  }
+  .bj-flame-burst { animation: bj-flame 1.1s ease-out forwards; }
+
+  /* ── Confetti ── */
+  @keyframes bj-confetti {
+    0%   { opacity: 1; transform: translate(-50%,-50%) rotate(0); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--cx)), calc(-50% + var(--cy))) rotate(var(--cr)); }
+  }
+
+  /* ── Banner pop ── */
+  @keyframes bj-pop {
+    0%   { opacity: 0; transform: scale(.6); }
+    55%  { opacity: 1; transform: scale(1.08); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .bj-banner-pop { animation: bj-pop .5s cubic-bezier(.2,.9,.3,1.2) both; }
+
+  /* ── Cash pop ── */
+  @keyframes bj-cash {
+    0%   { opacity: 0; transform: translate(-50%, 6px) scale(.7); }
+    20%  { opacity: 1; transform: translate(-50%, -2px) scale(1.05); }
+    80%  { opacity: 1; transform: translate(-50%, -2px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -10px) scale(1); }
+  }
+  .bj-cash-pop { animation: bj-cash 2.4s ease-out forwards; }
+
+  /* ── Banter reaction float ── */
+  @keyframes bj-react {
+    0%   { opacity: 0; transform: translateY(0) scale(.6); }
+    15%  { opacity: 1; transform: translateY(-14px) scale(1); }
+    100% { opacity: 0; transform: translateY(-150px) scale(.9); }
+  }
+  .bj-react-float { animation: bj-react 3.2s ease-out forwards; }
+</style>
+</head>
+<body>
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="20" fill="#7742FF"/>
+      <rect x="34" y="28" width="34" height="46" rx="5" fill="#fff" transform="rotate(-10 51 51)"/>
+      <rect x="44" y="32" width="34" height="46" rx="5" fill="#FCFF40" transform="rotate(10 61 55)"/>
+      <text x="60" y="64" font-family="Arial" font-weight="bold" font-size="26" fill="#150030" text-anchor="middle">21</text>
+    </svg>
+  </template>
+
+  <div id="stage"></div>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="engine.jsx"></script>
+  <script type="text/babel" src="cards.jsx"></script>
+  <script type="text/babel" src="chips.jsx"></script>
+  <script type="text/babel" src="fx.jsx"></script>
+  <script type="text/babel" src="dealer.jsx"></script>
+  <script type="text/babel" src="seats.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+
+  <script type="text/babel" data-presets="react">
+    const DEVICE_W = 402, DEVICE_H = 874;
+
+    function Stage() {
+      const wrapRef = React.useRef(null);
+      React.useEffect(() => {
+        const fit = () => {
+          const pad = 24;
+          const s = Math.min((window.innerWidth - pad) / DEVICE_W, (window.innerHeight - pad) / DEVICE_H, 1.15);
+          const el = document.getElementById('stage');
+          if (el) el.style.transform = `scale(${s})`;
+        };
+        fit();
+        window.addEventListener('resize', fit);
+        return () => window.removeEventListener('resize', fit);
+      }, []);
+      return (
+        <IOSDevice dark width={DEVICE_W} height={DEVICE_H}>
+          <Table />
+        </IOSDevice>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('stage')).render(<Stage />);
+  </script>
+</body>
+</html>

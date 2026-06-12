@@ -1,0 +1,92 @@
+/* ==========================================================================
+   Wellness & Whiskey — warm reskin over the Dabble token base.
+   Inherits Circular Std / Barlow / Rubik + spacing/radius/motion from
+   colors_and_type.css. Re-maps the purple-forward palette to oak + amber.
+   ========================================================================== */
+
+:root {
+  /* --- Surfaces --------------------------------------------------------- */
+  --ww-espresso:  #190E06;   /* darkest — header, dark hero surfaces       */
+  --ww-oak:       #241509;   /* raised dark surface                         */
+  --ww-oak-soft:  #32200F;   /* dark chip / inset on espresso               */
+  --ww-cream:     #F8F1E6;   /* light app canvas                            */
+  --ww-paper:     #FFFFFF;   /* card surface                                */
+  --ww-sand:      #F1E6D4;   /* tinted chip / inset on light                */
+  --ww-sand-2:    #EaDcc4;
+
+  /* --- Brand amber ------------------------------------------------------ */
+  --ww-amber:        #C77D33;   /* primary accent                          */
+  --ww-amber-bright: #E4A24A;   /* highlight / glow                        */
+  --ww-amber-deep:   #A65E22;   /* pressed / deep                          */
+  --ww-gold:         #E7C779;   /* #1 rank, podium shine                   */
+  --ww-malt:         #8C6B3F;
+
+  /* --- Ink -------------------------------------------------------------- */
+  --ww-ink:       #271708;   /* headings on light                          */
+  --ww-ink-soft:  #6B5740;   /* body on light                              */
+  --ww-ink-mute:  #9C8870;   /* tertiary / captions                        */
+  --ww-on-dark:   #F8F1E6;   /* text on espresso                           */
+  --ww-on-dark-soft: #C6B49A;
+  --ww-on-dark-mute: #8C7A62;
+
+  /* --- Lines ------------------------------------------------------------ */
+  --ww-line:      rgba(39,23,8,0.09);   /* hairline on light               */
+  --ww-line-dark: rgba(248,241,230,0.12);
+
+  /* --- Semantic accents ------------------------------------------------- */
+  --ww-wax:    #B23A2E;   /* host badge / live / wax-seal red               */
+  --ww-forest: #4E8D5B;   /* up / good                                      */
+  --ww-rust:   #C0492F;   /* down                                           */
+
+  /* --- Glows / shadows -------------------------------------------------- */
+  --ww-glow-amber: 0 10px 30px rgba(199,125,51,0.38);
+  --ww-card:       0 2px 10px rgba(39,23,8,0.06);
+  --ww-card-lift:  0 10px 30px rgba(39,23,8,0.12);
+}
+
+* { box-sizing: border-box; }
+
+/* Re-point a few of the inherited Dabble semantic tokens so any shared
+   utility classes (.h1, .display, .numeric…) land in the right family. */
+:root {
+  --bg-app:       var(--ww-cream);
+  --bg-surface:   var(--ww-paper);
+  --fg-primary:   var(--ww-ink);
+  --fg-secondary: var(--ww-ink-soft);
+  --fg-tertiary:  var(--ww-ink-mute);
+  --brand:        var(--ww-amber);
+}
+
+.font-disp { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; }
+.font-num  { font-family: var(--font-numeric); font-weight: 700; font-variant-numeric: tabular-nums; }
+.tab-num   { font-variant-numeric: tabular-nums; }
+
+/* hide scrollbars inside the phone */
+.no-scrollbar::-webkit-scrollbar { width: 0; height: 0; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* whiskey range slider */
+input[type="range"].ww-range { -webkit-appearance: none; appearance: none; width: 100%; height: 26px; background: transparent; cursor: pointer; }
+input[type="range"].ww-range:focus { outline: none; }
+.ww-range::-webkit-slider-runnable-track { height: 9px; border-radius: 999px; background: transparent; }
+.ww-range::-moz-range-track { height: 9px; border-radius: 999px; background: transparent; }
+.ww-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 26px; height: 26px; margin-top: -8.5px; border-radius: 50%;
+  background: #fff; border: 4px solid var(--ww-amber);
+  box-shadow: 0 3px 9px rgba(39,23,8,.32);
+}
+.ww-range::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; border: 4px solid var(--ww-amber);
+  box-shadow: 0 3px 9px rgba(39,23,8,.32);
+}
+.ww-range:active::-webkit-slider-thumb { transform: scale(1.08); }
+
+/* keyframes */
+@keyframes wwpulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+@keyframes wwpop   { 0% { transform: scale(.6); opacity:0; } 60% { transform: scale(1.06); } 100% { transform: scale(1); opacity:1; } }
+@keyframes wwrise  { 0% { transform: translateY(14px); opacity:0; } 100% { transform: translateY(0); opacity:1; } }
+@keyframes wwspark { 0% { transform: translate(0,0) scale(0); opacity:0; } 30% { opacity:1; } 100% { transform: translate(var(--dx), var(--dy)) scale(1); opacity:0; } }
+@keyframes wwslideup { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+@keyframes wwfade { 0% { opacity:0; } 100% { opacity:1; } }

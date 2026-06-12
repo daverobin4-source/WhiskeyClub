@@ -1,0 +1,312 @@
+/* ==========================================================================
+   Dabble Design System — Colors & Type
+   Tokens pulled from bookmaker-frontend (packages/common/src/Theme) and the
+   Figma design system. Circular Std is the primary face; Barlow SemiCondensed
+   is the display / stat face; Rubik is used for editorial numeric callouts.
+   ========================================================================== */
+
+/* --- Fonts ---------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Circular Std';
+  src: url('fonts/CircularStd-Book.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Circular Std';
+  src: url('fonts/CircularStd-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Circular Std';
+  src: url('fonts/CircularStd-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  src: url('fonts/BarlowSemiCondensed-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Rubik';
+  src: url('fonts/Rubik-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Rubik';
+  src: url('fonts/Rubik-MediumItalic.ttf') format('truetype');
+  font-weight: 500; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Rubik';
+  src: url('fonts/Rubik-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Rubik';
+  src: url('fonts/Rubik-BoldItalic.ttf') format('truetype');
+  font-weight: 700; font-style: italic; font-display: swap;
+}
+
+:root {
+  /* ------------------------------------------------------------------------
+     BRAND COLORS (primary palette — named, from Theme/colors.ts)
+     ------------------------------------------------------------------------ */
+  --dabblish:      #7742FF;  /* Primary brand purple */
+  --dabblesser:    #9C75FF;  /* Lighter brand purple */
+  --cosmic:        #4D23A4;  /* Deep brand purple */
+  --midnight:      #150030;  /* Deep brand black-purple (primary text / bg dark) */
+  --dusk:          #0A010F;  /* Pure dark mode background */
+  --barbie:        #FF007B;  /* Accent pink */
+  --mint:          #73FBD3;  /* Accent mint */
+  --aura:          #DBC386;  /* Accent gold */
+  --ray:           #FCFF40;  /* Accent yellow */
+
+  /* ------------------------------------------------------------------------
+     NEUTRALS
+     ------------------------------------------------------------------------ */
+  --white:         #FFFFFF;
+  --glass:         #FAFAFA;  /* Primary light bg */
+  --plaster:       #EFEFEF;  /* Card bg on light */
+  --concrete:      #0F0E10;  /* Dark mode card bg */
+  --shadow:        #1E1C1E;  /* Dark mode elevated surface */
+  --smoke:         #2C2A2C;  /* Dark mode divider / border */
+  --charcoal:      #000000;  /* True black */
+  --black:         #000000;
+
+  /* Text neutrals (midnight = darkest, fog = lightest) */
+  --lavender:      #57486A;  /* Body text on light */
+  --mist:          #877D97;  /* Secondary text */
+  --fog:           #9687A1;  /* Tertiary text / dark-mode secondary */
+  --plum:          #BBAFC0;  /* Muted text */
+  --violet:        #EEE8FC;  /* Tint bg */
+
+  /* Transparent variants (from code) */
+  --dabblish-16:   #7742FF29;
+  --midnight-8:    #15003014;
+  --glass-16:      #FAFAFA29;
+  --glass-20:      rgba(250,250,250,0.20);
+  --glass-95:      rgba(250,250,250,0.95);
+  --mist-16:       #877D9729;
+  --charcoal-10:   #ECECEF;
+  --transparent-purple: rgba(119,66,255,0.16);
+  --transparent-dark-purple: rgba(21,0,48,0.33);
+
+  /* ------------------------------------------------------------------------
+     SEMANTIC / STATUS
+     ------------------------------------------------------------------------ */
+  --success:       #34A854;  /* forest */
+  --success-alt:   #47BD68;  /* leaf */
+  --error:         #E84446;  /* lobster */
+  --error-alt:     #FF5053;  /* tomato */
+  --error-soft:    #FF8080;  /* watermelon */
+  --warning:       #F0A71B;  /* lemon */
+  --warning-alt:   #FDB52B;  /* tangerine */
+  --info:          #448FFF;  /* ocean */
+  --info-alt:      #2177F8;  /* sapphire */
+
+  /* ------------------------------------------------------------------------
+     SEMANTIC TOKENS — Light mode (default)
+     ------------------------------------------------------------------------ */
+  --bg-app:        var(--glass);
+  --bg-surface:    var(--white);
+  --bg-card:       var(--plaster);
+  --bg-raised:     var(--white);
+  --border:        var(--midnight-8);
+  --divider:       var(--midnight-8);
+
+  --fg-primary:    var(--midnight);   /* headings, primary text */
+  --fg-secondary:  var(--lavender);   /* body */
+  --fg-tertiary:   var(--mist);       /* captions, meta */
+  --fg-muted:      var(--plum);
+  --fg-on-brand:   var(--white);
+  --fg-link:       var(--dabblish);
+
+  --brand:         var(--dabblish);
+  --brand-soft:    var(--dabblish-16);
+  --brand-tint:    var(--violet);
+
+  --price-positive:var(--success);
+  --price-negative:var(--error);
+
+  /* ------------------------------------------------------------------------
+     TYPE SYSTEM
+     ------------------------------------------------------------------------ */
+  --font-primary:  'Circular Std', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-display:  'Barlow Semi Condensed', 'Circular Std', sans-serif;
+  --font-numeric:  'Rubik', 'Circular Std', sans-serif;
+
+  /* Size ramp (matches font.ts token names) */
+  --fs-4xs:  8px;
+  --fs-3xs: 10px;
+  --fs-2xs: 12px;
+  --fs-xs:  13px;
+  --fs-sm:  14px;
+  --fs-md:  15px;
+  --fs-lg:  16px;
+  --fs-xl:  17px;
+  --fs-2xl: 18px;
+  --fs-3xl: 20px;
+  --fs-4xl: 32px;
+  --fs-5xl: 36px;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold:600;
+  --fw-bold:    700;
+
+  /* Line heights (tight by default; the app uses Circular tightly) */
+  --lh-tight:   1.15;
+  --lh-snug:    1.25;
+  --lh-normal:  1.4;
+  --lh-loose:   1.55;
+
+  /* Letter spacing (Barlow used uppercase-ish, with slight negative tracking on Circular large) */
+  --ls-tight:   -0.01em;
+  --ls-normal:  0;
+  --ls-wide:    0.04em;
+  --ls-caps:    0.08em;
+
+  /* ------------------------------------------------------------------------
+     SPACING — 8pt grid (SPACING_SIZE=8 in theme.ts). Design system is on a 4x4 sub-grid.
+     ------------------------------------------------------------------------ */
+  --sp-0:  0;
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-7:  28px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* Corner radius (observed: pills, chunky cards, tight chips) */
+  --r-xs:  4px;
+  --r-sm:  6px;
+  --r-md:  8px;
+  --r-lg:  12px;
+  --r-xl:  16px;
+  --r-2xl: 20px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --shadow-card:    0 2px 8px rgba(21, 0, 48, 0.06);
+  --shadow-raised:  0 4px 16px rgba(21, 0, 48, 0.10);
+  --shadow-modal:   0 16px 48px rgba(21, 0, 48, 0.24);
+  --shadow-brand:   0 8px 24px rgba(119, 66, 255, 0.32);
+
+  /* Motion */
+  --ease-snappy:   cubic-bezier(.2, .8, .2, 1);
+  --ease-standard: cubic-bezier(.4, 0, .2, 1);
+  --dur-fast: 120ms;
+  --dur-med:  200ms;
+  --dur-slow: 320ms;
+}
+
+/* Dark mode token re-mapping (opt-in via [data-theme="dark"] or prefers) */
+[data-theme="dark"] {
+  --bg-app:       var(--dusk);
+  --bg-surface:   var(--concrete);
+  --bg-card:      var(--concrete);
+  --bg-raised:    var(--shadow);
+  --border:       var(--glass-16);
+  --divider:      var(--smoke);
+
+  --fg-primary:   var(--glass);
+  --fg-secondary: var(--plum);
+  --fg-tertiary:  var(--fog);
+  --fg-muted:     var(--mist);
+  --fg-on-brand:  var(--white);
+
+  --brand-soft:   var(--transparent-purple);
+  --brand-tint:   rgba(119,66,255,0.12);
+}
+
+/* --- Semantic element styles -------------------------------------------- */
+
+html, body {
+  font-family: var(--font-primary);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-normal);
+  color: var(--fg-primary);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, .h1 {
+  font-family: var(--font-primary);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-5xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-primary);
+  margin: 0;
+}
+h2, .h2 {
+  font-family: var(--font-primary);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-4xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  margin: 0;
+}
+h3, .h3 {
+  font-family: var(--font-primary);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-snug);
+  margin: 0;
+}
+h4, .h4 {
+  font-family: var(--font-primary);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-snug);
+  margin: 0;
+}
+
+p, .body {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  color: var(--fg-secondary);
+  margin: 0;
+}
+
+small, .caption {
+  font-size: var(--fs-2xs);
+  color: var(--fg-tertiary);
+  line-height: var(--lh-snug);
+}
+
+/* Display — Barlow SemiCondensed (team names, big stats labels, price badges) */
+.display, .stat-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+}
+
+/* Editorial numeric — Rubik (used on Feed big-number moments) */
+.numeric, .big-number {
+  font-family: var(--font-numeric);
+  font-weight: 700;
+}
+
+/* Price pill text — Circular medium, tabular */
+.price {
+  font-family: var(--font-primary);
+  font-weight: var(--fw-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Utility */
+.u-dabblish { color: var(--dabblish); }
+.u-midnight { color: var(--midnight); }
+.u-mist     { color: var(--mist); }
+.u-forest   { color: var(--success); }
+.u-lobster  { color: var(--error); }
