@@ -82,7 +82,7 @@ function Wordmark({ dark = true }) {
 function AppHeader({ meeting = WW.meeting, mobile = false }) {
   const season = meeting.season || 1;
   return (
-    <div style={{ background:C.espresso, flexShrink:0, paddingTop: mobile ? 'calc(env(safe-area-inset-top, 0px) + 16px)' : 52, paddingBottom:13, position:'relative' }}>
+    <div style={{ background:C.espresso, flexShrink:0, paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom:13, position:'relative' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px' }}>
         <Wordmark/>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -109,7 +109,7 @@ const TABS = [
 ];
 function TabBar({ active, onChange, banterDot, mobile = false }) {
   return (
-    <div style={{ background:C.espresso, flexShrink:0, borderTop:`1px solid ${C.lineDark}`, paddingBottom: mobile ? 'calc(env(safe-area-inset-bottom, 0px) + 10px)' : 24 }}>
+    <div style={{ background:C.espresso, flexShrink:0, borderTop:`1px solid ${C.lineDark}`, paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}>
       <div style={{ display:'flex', justifyContent:'space-around', alignItems:'stretch', padding:'9px 4px 0' }}>
         {TABS.map(t => {
           const on = t.id === active;

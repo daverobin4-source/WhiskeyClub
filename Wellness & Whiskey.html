@@ -14,11 +14,11 @@
   #phone-scale { transform-origin:center center; }
   #root { height:100%; }
   /* On phones, drop the device-mockup chrome and fill the screen edge-to-edge.
-     Use dynamic viewport height (dvh) so the tab bar isn't hidden behind the
-     mobile browser's bottom toolbar. */
+     Size to the SMALL viewport (svh) — the height with the browser's toolbars
+     showing — so the tab bar is never hidden behind Chrome/Safari's bottom bar. */
   @media (max-width: 600px) {
     body { background:#190E06; }
-    #stage { display:block; bottom:auto; height:100vh; height:100dvh; }
+    #stage { display:block; bottom:auto; height:100vh; height:100svh; }
     #phone-scale { width:100%; height:100%; }
   }
 </style>
