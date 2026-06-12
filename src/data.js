@@ -5,13 +5,19 @@
    total = avgA+avgT+avgF. Exposed as window.WW. */
 (function () {
   var members = [
-    { id: 'macca', name: 'Macca',  color: '#C77D33', you: true },
-    { id: 'bec',   name: 'Bec',    color: '#B23A2E' },
-    { id: 'tex',   name: 'Tex',    color: '#4E8D5B' },
-    { id: 'priya', name: 'Priya',  color: '#B0588A' },
-    { id: 'lou',   name: 'Lou',    color: '#3E7CA8' },
-    { id: 'sana',  name: 'Sana',   color: '#D69A2E' }
+    { id: 'dave',    name: 'Dave',    color: '#C77D33', you: true },
+    { id: 'mike',    name: 'Mike',    color: '#B23A2E' },
+    { id: 'nate',    name: 'Nate',    color: '#4E8D5B' },
+    { id: 'sam',     name: 'Sam',     color: '#B0588A' },
+    { id: 'tyler',   name: 'Tyler',   color: '#3E7CA8' },
+    { id: 'pete',    name: 'Pete',    color: '#D69A2E' },
+    { id: 'ben',     name: 'Ben',     color: '#7B6CCF' },
+    { id: 'gerard',  name: 'Gerard',  color: '#2E9E8F' },
+    { id: 'tristan', name: 'Tristan', color: '#C56B4A' }
   ];
+
+  // Fixed host rotation (used to compute who's up after the next host activates).
+  var hostRotation = ['dave','mike','nate','sam','tyler','pete','ben','gerard','tristan'];
 
   // helper to build a whiskey
   function w(o) {
@@ -65,8 +71,9 @@
   var meeting = {
     season: 1,
     no: 14,
-    host: 'bec',
-    venue: 'Bec\u2019s place',
+    host: 'mike',
+    nextHost: 'dave',
+    venue: 'Mike\u2019s place',
     address: '14 Lygon St, Carlton',
     target: target,
     theme: 'Peated & Proud',
@@ -78,22 +85,22 @@
       'A clean glass + your palate',
       'Something to soak it up'
     ],
-    rsvp: { macca:'going', bec:'going', tex:'going', priya:'maybe', lou:'going', sana:'out' }
+    rsvp: { dave:'going', mike:'going', nate:'going', sam:'maybe', tyler:'going', pete:'out', ben:'going', gerard:'maybe', tristan:'going' }
   };
 
   // Banter feed
   var banter = [
-    { id:'b1', author:'tex', time:'18m',
+    { id:'b1', author:'nate', time:'18m',
       text:'Hot take: the Yamazaki is overrated and you\u2019re all just scared to say it. Bring receipts Friday.',
       reactions:{ '\uD83D\uDD25':5, '\uD83D\uDE02':9, '\u2764\uFE0F':1, '\uD83E\uDD43':2 }, mine:null, comments:6, score:null },
-    { id:'b2', author:'sana', time:'1h',
+    { id:'b2', author:'pete', time:'1h',
       text:'Logged the Lagavulin 16 from last week. This stuff is unreal \u2014 went straight near the top.',
       reactions:{ '\uD83D\uDD25':12, '\uD83D\uDE02':0, '\u2764\uFE0F':4, '\uD83E\uDD43':7 }, mine:'\uD83D\uDD25', comments:3,
       score:{ whiskey:'lagavulin16', a:4.75, t:4.40, f:4.60 } },
-    { id:'b3', author:'bec', time:'3h',
-      text:'Reminder: Friday is Islay night at mine. $40 a head, BYO something smoky. Priya stop saying \u201Cmaybe\u201D.',
+    { id:'b3', author:'mike', time:'3h',
+      text:'Reminder: Friday is Islay night at mine. $40 a head, BYO something smoky. Sam stop saying \u201Cmaybe\u201D.',
       reactions:{ '\uD83D\uDD25':3, '\uD83D\uDE02':14, '\u2764\uFE0F':6, '\uD83E\uDD43':1 }, mine:'\uD83D\uDE02', comments:11, score:null },
-    { id:'b4', author:'lou', time:'5h',
+    { id:'b4', author:'tyler', time:'5h',
       text:'Monkey Shoulder defenders please form an orderly queue so I can ignore each of you individually.',
       reactions:{ '\uD83D\uDD25':2, '\uD83D\uDE02':17, '\u2764\uFE0F':2, '\uD83E\uDD43':0 }, mine:null, comments:8, score:null }
   ];
@@ -121,6 +128,7 @@
     whiskey: function (id) { return whiskeys.find(function (k) { return k.id === id; }); },
     whiskeys: whiskeys,
     meeting: meeting,
+    hostRotation: hostRotation,
     banter: banter,
     addWhiskey: addWhiskey,
     ensureWhiskeys: ensureWhiskeys,

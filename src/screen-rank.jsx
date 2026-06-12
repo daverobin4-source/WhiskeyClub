@@ -194,7 +194,7 @@
     return (
       <div className="no-scrollbar" style={{ flex:1, overflowY:'auto', background:C.cream, paddingBottom:30, position:'relative' }}>
         <div style={{ padding:'16px 16px 2px' }}>
-          <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:26, color:C.ink, letterSpacing:'-.02em' }}>Rank a dram</div>
+          <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:26, color:C.ink, letterSpacing:'-.02em' }}>Rank a bottle</div>
           <div style={{ fontFamily:F.sans, fontSize:13.5, color:C.inkMute, marginTop:2 }}>Score the nose, palate &amp; finish — each out of 5.</div>
         </div>
 

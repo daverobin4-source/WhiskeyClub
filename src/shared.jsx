@@ -79,20 +79,23 @@ function Wordmark({ dark = true }) {
 }
 
 /* ---- App header ---------------------------------------------------------- */
-function AppHeader({ meeting = WW.meeting, mobile = false }) {
+function AppHeader({ meeting = WW.meeting, mobile = false, onActivate }) {
   const season = meeting.season || 1;
+  const myTurn = meeting.nextHost === WW.me.id;
   return (
     <div style={{ background:C.espresso, flexShrink:0, paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom:13, position:'relative' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px' }}>
         <Wordmark/>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{
+          <button onClick={myTurn && onActivate ? onActivate : undefined} style={{
             display:'flex', alignItems:'center', gap:6, height:34, padding:'0 11px',
-            borderRadius:999, background:'rgba(248,241,230,.08)', border:`1px solid ${C.lineDark}`,
+            borderRadius:999, background:'rgba(248,241,230,.08)', border:`1px solid ${myTurn ? C.amber : C.lineDark}`,
+            cursor: myTurn ? 'pointer' : 'default', position:'relative', font:'inherit',
           }}>
             <Icon name="trophy-fill" size={14} color={C.gold}/>
-            <span className="tab-num" style={{ fontFamily:F.sans, fontWeight:500, fontSize:13, color:C.onDark, whiteSpace:'nowrap' }}>S{season} · E{meeting.no}</span>
-          </div>
+            <span className="tab-num" style={{ fontFamily:F.sans, fontWeight:500, fontSize:13, color:C.onDark, whiteSpace:'nowrap' }}>S{season}·E{meeting.no}</span>
+            {myTurn && <span style={{ position:'absolute', top:-3, right:-3, width:10, height:10, borderRadius:999, background:C.amberBright, border:'2px solid var(--ww-espresso)', boxSizing:'content-box', boxShadow:`0 0 6px ${C.amberBright}` }}/>}
+          </button>
           <Avatar m={WW.me} size={34} ring="rgba(248,241,230,.18)"/>
         </div>
       </div>

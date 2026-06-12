@@ -39,7 +39,8 @@
     const bottle = WW.whiskey(mtg.bottle);
     const going = WW.members.filter(m => rsvp[m.id] === 'going');
     const myStatus = rsvp[WW.me.id];
-    const isMyTurn = mtg.host === WW.me.id;
+    const myTurn = mtg.nextHost === WW.me.id;
+    const nextHostM = WW.byId(mtg.nextHost);
 
     return (
       <div className="no-scrollbar" style={{ flex:1, overflowY:'auto', background:C.cream, paddingBottom:28 }}>
@@ -176,28 +177,41 @@
           </div>
         </div>
 
-        {/* Activate next episode */}
-        <SectionLabel>Pass the torch</SectionLabel>
+        {/* After this — next episode */}
+        <SectionLabel>After this</SectionLabel>
         <div style={{ padding:'0 14px' }}>
-          <div onClick={onActivate} style={{
-            position:'relative', overflow:'hidden', cursor:'pointer', borderRadius:18,
-            background:`radial-gradient(120% 100% at 100% 0%, rgba(199,125,51,.5) 0%, rgba(199,125,51,0) 55%), linear-gradient(155deg, #2A1A0E, #190E06)`,
-            border:`1px solid ${C.lineDark}`, padding:'16px 16px', color:C.onDark, boxShadow:'0 12px 30px rgba(39,23,8,.22)',
-          }}>
-            <div style={{ display:'flex', alignItems:'center', gap:13 }}>
-              <div style={{ width:42, height:42, borderRadius:13, flexShrink:0, background:C.amber, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'inset 0 1px 0 rgba(255,255,255,.25)' }}>
-                <Icon name="plus" size={22} color={C.espresso}/>
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontFamily:F.disp, fontWeight:600, fontSize:10.5, letterSpacing:'.14em', color:C.amberBright }}>
-                  {isMyTurn ? 'IT’S YOUR TURN' : 'YOUR TURN TO HOST?'}
+          {myTurn ? (
+            <div onClick={onActivate} style={{
+              position:'relative', overflow:'hidden', cursor:'pointer', borderRadius:18,
+              background:`radial-gradient(120% 100% at 100% 0%, rgba(199,125,51,.5) 0%, rgba(199,125,51,0) 55%), linear-gradient(155deg, #2A1A0E, #190E06)`,
+              border:`1px solid ${C.lineDark}`, padding:'16px 16px', color:C.onDark, boxShadow:'0 12px 30px rgba(39,23,8,.22)',
+            }}>
+              <div style={{ display:'flex', alignItems:'center', gap:13 }}>
+                <div style={{ width:42, height:42, borderRadius:13, flexShrink:0, background:C.amber, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'inset 0 1px 0 rgba(255,255,255,.25)' }}>
+                  <Icon name="plus" size={22} color={C.espresso}/>
                 </div>
-                <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:16, color:C.onDark, marginTop:1 }}>Activate Season {season} · Ep {mtg.no + 1}</div>
-                <div style={{ fontFamily:F.sans, fontSize:12.5, color:C.onDarkSoft, marginTop:2 }}>Set the date, venue &amp; house pour</div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontFamily:F.disp, fontWeight:600, fontSize:10.5, letterSpacing:'.14em', color:C.amberBright }}>IT’S YOUR TURN · EPISODE {mtg.no + 1}</div>
+                  <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:16, color:C.onDark, marginTop:1 }}>Activate next episode</div>
+                  <div style={{ fontFamily:F.sans, fontSize:12.5, color:C.onDarkSoft, marginTop:2 }}>Set the date, venue &amp; the bottle to rank</div>
+                </div>
+                <Icon name="chevron" size={18} color={C.amberBright}/>
               </div>
-              <Icon name="chevron" size={18} color={C.amberBright}/>
             </div>
-          </div>
+          ) : (
+            <div style={{
+              display:'flex', alignItems:'center', gap:13, borderRadius:18,
+              background:C.paper, border:`1px solid ${C.line}`, padding:'15px 16px', boxShadow:'var(--ww-card)',
+            }}>
+              <Avatar m={nextHostM} size={42}/>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontFamily:F.disp, fontWeight:600, fontSize:10.5, letterSpacing:'.14em', color:C.inkMute }}>EPISODE {mtg.no + 1}</div>
+                <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:16, color:C.ink, marginTop:1 }}>{nextHostM ? `${nextHostM.name}’s turn to host` : 'Up next'}</div>
+                <div style={{ fontFamily:F.sans, fontSize:12.5, color:C.inkMute, marginTop:2 }}>Waiting on them to set it up</div>
+              </div>
+              <Icon name="clock" size={18} color={C.inkMute}/>
+            </div>
+          )}
         </div>
 
         {/* Past episodes */}

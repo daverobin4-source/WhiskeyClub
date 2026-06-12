@@ -1,4 +1,5 @@
-/* screen-banter.jsx — club chatter: composer, posts, score cards, reactions. */
+/* screen-banter.jsx — club chatter. Feed scrolls above a docked, chat-style
+   composer (avatar + growing input + amber send) fixed at the bottom. */
 (function () {
   const { useState, useRef } = React;
 
@@ -71,65 +72,79 @@
             <div style={{ fontFamily:F.sans, fontSize:12, color:C.inkMute, marginTop:1 }}>{post.time === 'just now' ? 'just now' : post.time + ' ago'}</div>
           </div>
         </div>
-        <div style={{ fontFamily:F.sans, fontSize:14.5, color:C.ink, lineHeight:1.45, marginTop:11 }}>{post.text}</div>
+        <div style={{ fontFamily:F.sans, fontSize:14.5, color:C.ink, lineHeight:1.45, marginTop:11, whiteSpace:'pre-wrap' }}>{post.text}</div>
         {post.score && <ScoreCard score={post.score}/>}
         <ReactionBar post={post} onReact={onReact}/>
       </div>
     );
   }
 
-  function Composer({ onPost }) {
-    const [open, setOpen] = useState(false);
+  /* Docked, chat-style composer fixed to the bottom of the screen. */
+  function DockedComposer({ onSend }) {
     const [text, setText] = useState('');
     const ref = useRef(null);
+    const has = !!text.trim();
+
+    function grow(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(120, el.scrollHeight) + 'px';
+    }
     function send() {
       const t = text.trim(); if (!t) return;
-      onPost(t); setText(''); setOpen(false);
+      onSend(t); setText('');
+      if (ref.current) ref.current.style.height = 'auto';
     }
+    function onKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    }
+
     return (
-      <div style={{ background:C.paper, borderRadius:16, border:`1px solid ${C.line}`, padding:'12px 14px', marginBottom:12, boxShadow:'var(--ww-card)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:11 }}>
-          <Avatar m={WW.me} size={36}/>
-          {!open ? (
-            <button onClick={() => { setOpen(true); setTimeout(() => ref.current && ref.current.focus(), 30); }} style={{
-              flex:1, textAlign:'left', background:C.cream, border:`1px solid ${C.line}`, borderRadius:999,
-              padding:'10px 16px', fontFamily:F.sans, fontSize:14, color:C.inkMute, cursor:'text',
-            }}>Start some banter…</button>
-          ) : (
-            <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:14, color:C.ink }}>New banter</div>
-          )}
-        </div>
-        {open && (
-          <div style={{ marginTop:11 }}>
-            <textarea ref={ref} value={text} onChange={e => setText(e.target.value)} rows={3}
-              placeholder="What&rsquo;s the verdict, then?" style={{
-                width:'100%', resize:'none', border:`1px solid ${C.line}`, borderRadius:12,
-                padding:'11px 13px', fontFamily:F.sans, fontSize:14, color:C.ink, outline:'none',
-                background:C.cream, lineHeight:1.4,
-              }}/>
-            <div style={{ display:'flex', gap:9, marginTop:10, justifyContent:'flex-end' }}>
-              <button onClick={() => { setOpen(false); setText(''); }} style={{ background:'none', border:'none', color:C.inkMute, fontFamily:F.sans, fontWeight:600, fontSize:14, cursor:'pointer', padding:'9px 12px' }}>Cancel</button>
-              <button onClick={send} disabled={!text.trim()} style={{
-                display:'flex', alignItems:'center', gap:7, background: text.trim() ? C.amber : C.sand2, border:'none',
-                color: text.trim() ? '#fff' : C.inkMute, borderRadius:11, padding:'9px 18px',
-                fontFamily:F.sans, fontWeight:700, fontSize:14, cursor: text.trim()?'pointer':'default',
-                boxShadow: text.trim() ? 'var(--ww-glow-amber)' : 'none',
-              }}><Icon name="send" size={15} color={text.trim()?'#fff':C.inkMute}/> Post</button>
-            </div>
-          </div>
-        )}
+      <div style={{
+        flexShrink:0, background:C.paper, borderTop:`1px solid ${C.line}`,
+        padding:'10px 12px', display:'flex', alignItems:'flex-end', gap:10,
+        boxShadow:'0 -4px 16px rgba(39,23,8,.06)',
+      }}>
+        <Avatar m={WW.me} size={34} style={{ marginBottom:4 }}/>
+        <textarea
+          ref={ref} rows={1} value={text}
+          onChange={e => { setText(e.target.value); grow(e.target); }}
+          onKeyDown={onKeyDown}
+          placeholder="Start some banter…"
+          style={{
+            flex:1, resize:'none', border:`1px solid ${C.line}`, borderRadius:20,
+            padding:'9px 14px', fontFamily:F.sans, fontSize:14, color:C.ink, outline:'none',
+            background:C.cream, lineHeight:1.35, maxHeight:120, overflowY:'auto',
+          }}/>
+        <button onClick={send} disabled={!has} aria-label="Send" style={{
+          width:40, height:40, flexShrink:0, borderRadius:'50%', border:'none',
+          cursor: has ? 'pointer' : 'default',
+          background: has ? C.amber : C.sand2,
+          display:'flex', alignItems:'center', justifyContent:'center', marginBottom:1,
+          boxShadow: has ? 'var(--ww-glow-amber)' : 'none',
+          transition:'background var(--dur-fast) var(--ease-snappy)',
+        }}>
+          <Icon name="send" size={18} color={has ? '#fff' : C.inkMute}/>
+        </button>
       </div>
     );
   }
 
   function BanterScreen({ posts, onReact, onPost }) {
     const [tab, setTab] = useState('All');
+    const feedRef = useRef(null);
     const tabs = ['All', 'Reviews'];
     const shown = tab === 'Reviews' ? posts.filter(p => p.score) : posts;
+
+    function handleSend(text) {
+      onPost(text);
+      requestAnimationFrame(() => { if (feedRef.current) feedRef.current.scrollTop = 0; });
+    }
+
     return (
-      <div className="no-scrollbar" style={{ flex:1, overflowY:'auto', background:C.cream, paddingBottom:28 }}>
+      <div style={{ flex:1, minHeight:0, display:'flex', flexDirection:'column', background:C.cream }}>
         {/* sub tabs */}
-        <div style={{ display:'flex', gap:8, padding:'14px 16px 4px' }}>
+        <div style={{ display:'flex', gap:8, padding:'14px 16px 10px', flexShrink:0 }}>
           {tabs.map(t => {
             const on = t === tab;
             return (
@@ -142,17 +157,21 @@
             );
           })}
         </div>
-        <div style={{ padding:'10px 16px 0' }}>
-          <Composer onPost={onPost}/>
+
+        {/* scrolling feed */}
+        <div ref={feedRef} className="no-scrollbar" style={{ flex:1, minHeight:0, overflowY:'auto', padding:'0 16px 12px' }}>
           {shown.map(p => <Post key={p.id} post={p} onReact={onReact}/>)}
           {shown.length === 0 && (
             <div style={{ textAlign:'center', padding:'50px 30px', color:C.inkMute }}>
               <Icon name="chat" size={36} color={C.sand2}/>
               <div style={{ fontFamily:F.sans, fontWeight:700, fontSize:16, color:C.inkSoft, marginTop:10 }}>No reviews yet</div>
-              <div style={{ fontFamily:F.sans, fontSize:13.5, marginTop:4 }}>Rate a dram and it&rsquo;ll show up here.</div>
+              <div style={{ fontFamily:F.sans, fontSize:13.5, marginTop:4 }}>Rate a bottle and it’ll show up here.</div>
             </div>
           )}
         </div>
+
+        {/* docked composer */}
+        <DockedComposer onSend={handleSend}/>
       </div>
     );
   }

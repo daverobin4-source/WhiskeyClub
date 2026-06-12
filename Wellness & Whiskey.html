@@ -44,7 +44,7 @@
 
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
-const LS = 'ww_state_v3';
+const LS = 'ww_state_v4';
 
 function loadState() {
   try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) { return {}; }
@@ -131,21 +131,28 @@ function App() {
     setPosts(ps => [np, ...ps]);
   }
 
-  // Activate the next episode: archive the current one, register any new bottle,
-  // promote the new meeting and reset RSVPs.
+  // Activate the next episode: the user becomes host, nextHost rotates to the
+  // next person, RSVPs reset (host going, everyone else pending). Archive the
+  // current episode and register any newly-added bottle.
   function onActivateEpisode(next) {
     if (next.newWhiskey) {
       WW.addWhiskey(next.newWhiskey);
       setCustomWhiskeys(cw => cw.find(x => x.id === next.newWhiskey.id) ? cw : [...cw, next.newWhiskey]);
     }
     setEpisodes(eps => [meeting, ...eps]);
+    const host = WW.me.id;
+    const rot = WW.hostRotation && WW.hostRotation.length ? WW.hostRotation : WW.members.map(m => m.id);
+    const nextHost = rot[(rot.indexOf(host) + 1 + rot.length) % rot.length];
+    const rsvp = {};
+    WW.members.forEach(m => { rsvp[m.id] = (m.id === host ? 'going' : 'pending'); });
     const m = {
-      season: next.season, no: next.no, host: next.host, venue: next.venue, address: next.address,
-      target: next.target, theme: next.theme, subtitle: next.subtitle, buyIn: next.buyIn,
-      bottle: next.bottle, bring: next.bring, rsvp: next.rsvp,
+      season: next.season, no: next.no, host, nextHost,
+      venue: next.venue, address: next.address, target: next.target,
+      theme: next.theme, subtitle: next.subtitle, buyIn: next.buyIn,
+      bottle: next.bottle, bring: next.bring, rsvp,
     };
     setMeeting(m);
-    setRsvp(Object.assign({}, next.rsvp));
+    setRsvp(rsvp);
     setActivate(false);
     setTab('meeting');
   }
@@ -155,7 +162,7 @@ function App() {
   return (
     <IOSDevice dark={true} bare={mobile}>
       <div style={{ height:'100%', display:'flex', flexDirection:'column', background:'var(--ww-cream)' }}>
-        <AppHeader meeting={meeting} mobile={mobile}/>
+        <AppHeader meeting={meeting} mobile={mobile} onActivate={() => setActivate(true)}/>
         <div style={{ flex:1, minHeight:0, display:'flex', flexDirection:'column', position:'relative' }}>
           {tab === 'meeting' && <MeetingScreen meeting={meeting} episodes={episodes} rsvp={rsvp} onRsvp={onRsvp} onGotoRank={() => go('rank')} onActivate={() => setActivate(true)}/>}
           {tab === 'board'   && <BoardScreen key={'b' + boardVisit} userScores={userScores} justRated={justRated}/>}
