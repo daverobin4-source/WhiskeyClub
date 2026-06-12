@@ -13,10 +13,12 @@
   #stage { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
   #phone-scale { transform-origin:center center; }
   #root { height:100%; }
-  /* On phones, drop the device-mockup chrome and fill the screen edge-to-edge. */
+  /* On phones, drop the device-mockup chrome and fill the screen edge-to-edge.
+     Use dynamic viewport height (dvh) so the tab bar isn't hidden behind the
+     mobile browser's bottom toolbar. */
   @media (max-width: 600px) {
     body { background:#190E06; }
-    #stage { display:block; }
+    #stage { display:block; bottom:auto; height:100vh; height:100dvh; }
     #phone-scale { width:100%; height:100%; }
   }
 </style>
